@@ -11,32 +11,44 @@ import (
 )
 
 // define mongodb operations
-const collectionName string = "shorturls"
-var collection *mongo.Collection = db.DB.Collection(collectionName)
+const urlCollectionName string = "shorturls"
 
+var urlCollection *mongo.Collection = db.DB.Collection(urlCollectionName)
 
-func InsertOneUrl(url models.ShortUrl) (any, error){
-   insertedResult, err := collection.InsertOne(context.Background(), url)
+func InsertOneUrl(url models.ShortUrl) (any, error) {
+	insertedResult, err := urlCollection.InsertOne(context.Background(), url)
 
-   if err != nil {
-	log.Println("Failed to insert the url")
-	return nil, err
-   }
+	if err != nil {
+		log.Println("Failed to insert the url")
+		return nil, err
+	}
 
-   return insertedResult.InsertedID, nil
+	return insertedResult.InsertedID, nil
 }
 
-func FindOneUrlByShort(short string) (*models.ShortUrl, error){
+func FindOneUrlByShort(shortCode string) (*models.ShortUrl, error) {
 	var result models.ShortUrl
 
-	filter := bson.M{"short": short}
-	update := bson.D{{Key: "$inc", Value: bson.D{{Key: "visitcount", Value: 1}}}}
+	filter := bson.D{{Key: "shortCode", Value: shortCode}}
+	update := bson.D{{Key: "$inc", Value: bson.D{{Key: "visits", Value: 1}}}}
 
-	err := collection.FindOneAndUpdate(context.Background(), filter, update).Decode(&result)
+	err := urlCollection.FindOneAndUpdate(context.Background(), filter, update).Decode(&result)
 
 	if err != nil {
 		return nil, err
 	}
 
 	return &result, nil
+}
+
+func DeleteUrlByShort(shortCode string) (int, error) {
+	filter := bson.D{{Key: "shortCode", Value: shortCode}}
+
+	result, err := urlCollection.DeleteOne(context.TODO(), filter)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return int(result.DeletedCount), nil
 }
