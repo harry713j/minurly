@@ -23,6 +23,13 @@ func InsertOneUrl(url models.ShortUrl) (any, error) {
 		return nil, err
 	}
 
+	err = AddShortURLToUser(url.UserId.String(), insertedResult.InsertedID.(bson.ObjectID))
+
+	if err != nil {
+		log.Println("Error while create url ", err)
+		return nil, err
+	}
+
 	return insertedResult.InsertedID, nil
 }
 
@@ -41,12 +48,26 @@ func FindOneUrlByShort(shortCode string) (*models.ShortUrl, error) {
 	return &result, nil
 }
 
-func DeleteUrlByShort(shortCode string) (int, error) {
+func DeleteUrlByShort(shortCode string, userId bson.ObjectID) (int, error) {
 	filter := bson.D{{Key: "shortCode", Value: shortCode}}
+
+	shortUrl, err := FindOneUrlByShort(shortCode)
+
+	if err != nil {
+		log.Println("Unable to fetch short url")
+		return 0, err
+	}
 
 	result, err := urlCollection.DeleteOne(context.TODO(), filter)
 
 	if err != nil {
+		return 0, err
+	}
+
+	err = RemoveShortURLFromUser(userId.String(), shortUrl.ID)
+
+	if err != nil {
+		log.Println("Error while remove url ", err)
 		return 0, err
 	}
 

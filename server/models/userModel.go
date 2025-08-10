@@ -3,7 +3,6 @@ package models
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
@@ -28,7 +27,7 @@ type UserResponse struct {
 
 type Session struct {
 	ID        bson.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	SessionId uuid.UUID     `json:"sessionId"`
+	SessionId string        `json:"sessionId"`
 	UserId    bson.ObjectID `json:"userId"`
 	CreatedAt time.Time     `json:"createdAt"`
 	ExpiresAt time.Time     `json:"expiresAt"`

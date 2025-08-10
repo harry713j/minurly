@@ -67,6 +67,21 @@ func FindUserById(userId string) (*models.UserResponse, error) {
 	return nil, mongo.ErrNoDocuments
 }
 
+func FindUserByEmail(email string) (*models.User, bool) {
+	var user models.User
+
+	filter := bson.D{{Key: "email", Value: email}}
+
+	err := userCollection.FindOne(context.TODO(), filter).Decode(&user)
+
+	if err != nil {
+		log.Println("Failed to get user by email")
+		return nil, false
+	}
+
+	return &user, true
+}
+
 func AddShortURLToUser(userId string, shortURLId bson.ObjectID) error {
 	filter := bson.D{{Key: "_id", Value: userId}}
 	update := bson.D{{Key: "$push", Value: bson.D{{Key: "shorturls", Value: shortURLId}}}}

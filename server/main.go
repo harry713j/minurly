@@ -8,8 +8,8 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/harry713j/minurly/controller"
 	"github.com/harry713j/minurly/db"
+	"github.com/harry713j/minurly/routes"
 	"github.com/joho/godotenv"
 )
 
@@ -28,9 +28,9 @@ func main() {
 
 	subroute := router.PathPrefix("/api/v1").Subrouter()
 
-	subroute.HandleFunc("/short", controller.HandleCreateUrl).Methods(http.MethodPost)
-	subroute.HandleFunc("/{short-code}", controller.HandleGetUrl).Methods(http.MethodGet)
-	subroute.HandleFunc("/{short-code}", controller.HandleDeleteUrl).Methods(http.MethodDelete)
+	routes.AuthRoutes(subroute)
+	routes.UserRoutes(subroute)
+	routes.UrlRoutes(subroute)
 
 	handler := handlers.LoggingHandler(os.Stdout, cors(router))
 	server := &http.Server{
