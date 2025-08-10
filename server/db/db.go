@@ -14,11 +14,10 @@ import (
 // exporting for global use
 var (
 	Client *mongo.Client
-	DB *mongo.Database
+	DB     *mongo.Database
 )
 
-
-func connectDB(){
+func connectDB() {
 	DBURL := os.Getenv("DBURL")
 
 	if DBURL == "" {
@@ -32,12 +31,11 @@ func connectDB(){
 		log.Fatal("Failed to connect to the Database")
 	}
 
-
 	DB = Client.Database(utils.DBNAME)
 	log.Println("Connect to database successfully")
 }
 
-func init(){
+func init() {
 	godotenv.Load()
 	connectDB()
 }
