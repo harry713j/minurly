@@ -25,6 +25,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// url will be created by oauth client
+	// look for this state
 	url := config.OAuthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline)
 	http.Redirect(w, r, url, http.StatusFound)
 }

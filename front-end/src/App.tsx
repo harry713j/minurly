@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { SERVER_URL } from "./constants";
+import { SERVER_URL } from "./utils/constants";
 
 export default function App() {
   const [inputUrl, setInputUrl] = useState("");
