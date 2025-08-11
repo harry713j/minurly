@@ -11,6 +11,7 @@ import (
 	"github.com/harry713j/minurly/helper"
 	"github.com/harry713j/minurly/models"
 	"github.com/harry713j/minurly/utils"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/idtoken"
@@ -31,7 +32,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleLoginCallback(w http.ResponseWriter, r *http.Request) {
-
+	godotenv.Load()
 	code := r.URL.Query().Get("code") // oauth client send a ?code=random in query
 	if code == "" {
 		http.Error(w, "Code not found", http.StatusBadRequest)
@@ -113,13 +114,7 @@ func HandleLoginCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type loginResponse struct {
-		Message string `json:"message"`
-	}
-
-	utils.RespondWithJSON(w, http.StatusCreated, loginResponse{
-		Message: "Login successful",
-	})
+	http.Redirect(w, r, os.Getenv("ALLOWED_ORIGIN")+"/dashboard", http.StatusSeeOther)
 }
 
 func HandleLogout(w http.ResponseWriter, r *http.Request) {

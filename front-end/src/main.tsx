@@ -7,6 +7,11 @@ import { RouterProvider, createBrowserRouter } from "react-router";
 
 const router = createBrowserRouter([
   {
+    path: "/",
+    element: <h1>Hello there</h1>,
+    errorElement: <h1>Not found</h1>,
+  },
+  {
     path: "/login",
     element: <Login />,
   },
