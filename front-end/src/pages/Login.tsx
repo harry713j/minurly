@@ -1,10 +1,8 @@
 import { SERVER_URL } from "@/utils/constants";
-import { Button } from "@heroui/button";
-import { Card, CardHeader, CardBody } from "@heroui/card";
-import { Divider } from "@heroui/divider";
+import { Card, CardHeader, CardBody, Divider, Button } from "@heroui/react";
 import { GoogleLogo } from "phosphor-react";
 
-export function Login() {
+export default function Login() {
   const handleLogin = () => {
     window.location.href = `${SERVER_URL}/auth/google/login`;
   };

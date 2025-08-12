@@ -1,3 +1,5 @@
-import { Login } from "./Login";
+import Login from "./Login";
+import Dashboard from "./Dashboard";
+import NotFound from "./NotFound";
 
-export { Login };
+export { Login, Dashboard, NotFound };

@@ -66,7 +66,7 @@ func HandleLoginCallback(w http.ResponseWriter, r *http.Request) {
 
 	if user == nil {
 		// user not exists
-		user := &models.User{
+		user = &models.User{
 			Email:     email,
 			Name:      payload.Claims["name"].(string),
 			Profile:   payload.Claims["picture"].(string),
@@ -106,7 +106,7 @@ func HandleLoginCallback(w http.ResponseWriter, r *http.Request) {
 	session, _ := config.SessionStore.Get(r, "sessionId")
 
 	session.Values["sessionId"] = sessionId
-	session.Values["userId"] = user.ID
+	session.Values["userId"] = user.ID.Hex()
 	session.Values["email"] = email
 
 	if err := session.Save(r, w); err != nil {

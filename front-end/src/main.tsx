@@ -1,15 +1,20 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./global.css";
-import { HeroUIProvider } from "@heroui/react";
-import { Login } from "@/pages";
+import { HeroUIProvider, ToastProvider } from "@heroui/react";
+import { Login, Dashboard, NotFound } from "@/pages";
 import { RouterProvider, createBrowserRouter } from "react-router";
+import UserContextProvider from "@/context/UserContext";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <h1>Hello there</h1>,
-    errorElement: <h1>Not found</h1>,
+    errorElement: <NotFound />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+    errorElement: <NotFound />,
   },
   {
     path: "/login",
@@ -19,8 +24,11 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <HeroUIProvider>
-      <RouterProvider router={router} />
-    </HeroUIProvider>
+    <UserContextProvider>
+      <HeroUIProvider>
+        <RouterProvider router={router} />
+        <ToastProvider />
+      </HeroUIProvider>
+    </UserContextProvider>
   </StrictMode>
 );

@@ -30,7 +30,7 @@ func init() {
 		Path:     "/",
 		MaxAge:   86400 * 7,
 		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
+		Secure:   false,                // for dev
+		SameSite: http.SameSiteLaxMode, // for dev only
 	}
 }
