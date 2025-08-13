@@ -73,7 +73,6 @@ func HandleLoginCallback(w http.ResponseWriter, r *http.Request) {
 			OAuthId:   payload.Subject,
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
-			ShortUrls: []bson.ObjectID{},
 		}
 
 		id, err := helper.InsertOneUser(*user)

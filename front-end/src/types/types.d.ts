@@ -4,16 +4,16 @@ type ShortUrl = {
   shortCode: string;
   visits: number;
   userId: string;
-  lastVisited: Date;
-  createdAt: Date;
+  lastVisited: string;
+  createdAt: string;
 };
 
 type User = {
-  _id: string;
+  id: string;
   name: string;
   profile: string;
   email: string;
-  shortUrls: Array<ShortUrl> | [];
+  shorturls: Array<ShortUrl> | [];
 };
 
 type UserContextType = {

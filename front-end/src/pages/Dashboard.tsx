@@ -122,7 +122,7 @@ export default function Dashboard() {
   const onLogout = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${SERVER_URL}/auth/logout`, {
+      const response = await axios.get(`${SERVER_URL}/auth/google/logout`, {
         withCredentials: true,
       });
 
@@ -173,6 +173,10 @@ export default function Dashboard() {
     }
   };
 
+  const onVisit = () => {
+    window.open(`${shortUrl}`, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <div>
       {isFetching ? (
@@ -185,7 +189,7 @@ export default function Dashboard() {
             </NavbarBrand>
             <NavbarContent>
               <NavbarItem>
-                <Button variant="ghost" onPress={() => setIsOpen(true)}>
+                <Button variant="light" onPress={() => setIsOpen(!isOpen)}>
                   My Urls
                 </Button>
               </NavbarItem>
@@ -235,7 +239,7 @@ export default function Dashboard() {
                         <Button
                           isIconOnly
                           onPress={copyToclipboard}
-                          variant="ghost"
+                          variant="light"
                         >
                           {isCopied ? <CheckCircle /> : <Clipboard />}
                         </Button>
@@ -252,7 +256,7 @@ export default function Dashboard() {
         <div>
           <h2>Short Urls</h2>
           <section>
-            {user?.shortUrls.map((short) => (
+            {user?.shorturls?.map((short) => (
               <Card key={short._id}>
                 <CardHeader>
                   <h3>{`${window.location.protocol}/${window.location.host}/${short.shortCode}`}</h3>
@@ -260,7 +264,7 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardBody>
                   <Tooltip content="Visit URL" color="primary">
-                    <Button isIconOnly>
+                    <Button isIconOnly onPress={onVisit}>
                       <ArrowBendUpRight />
                     </Button>
                   </Tooltip>
@@ -287,7 +291,7 @@ export default function Dashboard() {
                 </CardBody>
                 <Divider />
                 <CardFooter>
-                  <p>{short.createdAt.toLocaleDateString()}</p>
+                  <p>{new Date(short.createdAt).toLocaleDateString()}</p>
                   <p>{`Visits: ${short.visits}`}</p>
                 </CardFooter>
               </Card>

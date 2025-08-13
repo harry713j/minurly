@@ -2,13 +2,14 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./global.css";
 import { HeroUIProvider, ToastProvider } from "@heroui/react";
-import { Login, Dashboard, NotFound } from "@/pages";
+import { Login, Dashboard, NotFound, Redirect } from "@/pages";
 import { RouterProvider, createBrowserRouter } from "react-router";
 import UserContextProvider from "@/context/UserContext";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/:short",
+    element: <Redirect />,
     errorElement: <NotFound />,
   },
   {

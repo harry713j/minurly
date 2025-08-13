@@ -26,7 +26,15 @@ func InsertOneSession(session models.Session) (any, error) {
 }
 
 func DeleteSession(userId string) (int, error) {
-	filter := bson.D{{Key: "userId", Value: userId}}
+
+	userObjId, err := bson.ObjectIDFromHex(userId)
+
+	if err != nil {
+		log.Println("failed to convert to objectId")
+		return 0, err
+	}
+
+	filter := bson.D{{Key: "userId", Value: userObjId}}
 
 	result, err := sessionCollection.DeleteOne(context.TODO(), filter)
 
