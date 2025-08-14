@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -169,5 +170,39 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) {
 
 	utils.RespondWithJSON(w, http.StatusOK, map[string]string{
 		"message": "Log out successful",
+	})
+}
+
+func HandleGetAuthStatus(w http.ResponseWriter, r *http.Request) {
+	session, err := config.SessionStore.Get(r, "sessionId")
+
+	if err != nil {
+		utils.RespondWithError(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	userId, ok := session.Values["userId"].(string)
+
+	if !ok {
+		utils.RespondWithError(w, http.StatusUnauthorized, "Invalid or expired session")
+		return
+	}
+
+	// check user exists or not
+	user, err := helper.FindUserById(userId)
+
+	if err != nil || user == nil {
+		utils.RespondWithError(w, http.StatusUnauthorized, "Invalid session")
+		return
+	}
+
+	type authResponse struct {
+		IsAuthorized bool `json:"isAuthorized"`
+	}
+
+	log.Println("Hello there")
+
+	utils.RespondWithJSON(w, http.StatusOK, authResponse{
+		IsAuthorized: true,
 	})
 }

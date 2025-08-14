@@ -111,6 +111,7 @@ export default function Dashboard() {
       });
 
       if (response.status === 200) {
+        setUser(null);
         navigate("/login");
       }
     } catch (err) {

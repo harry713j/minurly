@@ -5,8 +5,18 @@ import { HeroUIProvider, ToastProvider } from "@heroui/react";
 import { Login, Dashboard, NotFound, Redirect } from "@/pages";
 import { RouterProvider, createBrowserRouter } from "react-router";
 import UserContextProvider from "@/context/UserContext";
+import { AuthLayer } from "@/components";
 
 const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <AuthLayer>
+        <></>
+      </AuthLayer>
+    ),
+    errorElement: <NotFound />,
+  },
   {
     path: "/:short",
     element: <Redirect />,
@@ -14,12 +24,21 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <Dashboard />,
+    element: (
+      <AuthLayer>
+        {" "}
+        <Dashboard />
+      </AuthLayer>
+    ),
     errorElement: <NotFound />,
   },
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <AuthLayer>
+        <Login />
+      </AuthLayer>
+    ),
   },
 ]);
 
