@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -71,14 +70,13 @@ func HandleCreateUrl(w http.ResponseWriter, r *http.Request) {
 		LastVisited: time.Now(),
 	}
 
-	urlId, err := helper.InsertOneUrl(*url)
+	_, err = helper.InsertOneUrl(*url)
 
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "Unable to create a short url")
 		return
 	}
 
-	fmt.Println("New Url id: ", urlId)
 	utils.RespondWithJSON(w, http.StatusCreated, ShortUrlType{
 		ShortenCode: randomChars,
 	})

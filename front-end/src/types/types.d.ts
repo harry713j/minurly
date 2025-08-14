@@ -1,3 +1,5 @@
+import type { SetStateAction, Dispatch } from "react";
+
 type ShortUrl = {
   _id: string;
   originalUrl: string;
@@ -20,4 +22,6 @@ type UserContextType = {
   user: User | null;
   isFetching: boolean;
   error: string;
+  setUser: Dispatch<SetStateAction<User | null>>;
+  refetchUser: () => Promise<void>;
 };

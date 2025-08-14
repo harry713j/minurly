@@ -14,24 +14,16 @@ import {
   Button,
   User,
   CardFooter,
-  Divider,
   Tooltip,
 } from "@heroui/react";
 import axios, { type AxiosError } from "axios";
 import { SERVER_URL } from "@/utils/constants";
 import { useNavigate } from "react-router";
-import {
-  CircleNotch,
-  Copy,
-  ShareNetwork,
-  Trash,
-  ArrowBendUpRight,
-  Clipboard,
-  CheckCircle,
-} from "phosphor-react";
+import { CircleNotch, Clipboard, CheckCircle } from "phosphor-react";
+import { URLCard } from "@/components";
 
 export default function Dashboard() {
-  const { user, isFetching, error } = useUser();
+  const { user, isFetching, error, setUser, refetchUser } = useUser();
   const [longUrl, setLongUrl] = useState("");
   const [formError, setFormError] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -74,6 +66,9 @@ export default function Dashboard() {
         setShortUrl(
           `${window.location.protocol}/${window.location.host}/${response.data.shortCode}`
         );
+
+        await refetchUser();
+
         addToast({
           title: "Creation Success",
           description: "Short url created",
@@ -93,30 +88,19 @@ export default function Dashboard() {
     }
   };
 
-  const deleteShortUrl = async (shortCode: string) => {
-    setIsLoading(true);
-    try {
-      const response = await axios.delete(`${SERVER_URL}/urls/${shortCode}`, {
-        withCredentials: true,
-      });
+  const deleteUrlCard = (shortCode: string) => {
+    if (!user) return;
 
-      if (response.status === 200) {
-        addToast({
-          title: "Success Delete",
-          description: "Short url deleted",
-          color: "success",
-        });
-      }
-    } catch (err) {
-      const error = err as AxiosError;
-      addToast({
-        title: "Delete Failed",
-        description: (error.response?.data as any).error,
-        color: "danger",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    setUser((prev) =>
+      prev
+        ? {
+            ...prev,
+            shorturls: prev.shorturls.filter(
+              (url) => url.shortCode !== shortCode
+            ),
+          }
+        : null
+    );
   };
 
   const onLogout = async () => {
@@ -145,6 +129,10 @@ export default function Dashboard() {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(shortUrl);
       setIsCopied(true);
+      addToast({
+        title: "URL copied Successfully",
+        color: "success",
+      });
       setTimeout(() => {
         setIsCopied(false);
       }, 2000);
@@ -152,6 +140,10 @@ export default function Dashboard() {
       shortUrlRef.current?.select();
       document.execCommand("copy");
       setIsCopied(true);
+      addToast({
+        title: "URL copied Successfully",
+        color: "success",
+      });
       setTimeout(() => {
         setIsCopied(false);
       }, 2000);
@@ -230,6 +222,7 @@ export default function Dashboard() {
               {shortUrl && (
                 <div>
                   <Input
+                    ref={shortUrlRef}
                     readOnly
                     type="text"
                     className=""
@@ -257,44 +250,15 @@ export default function Dashboard() {
           <h2>Short Urls</h2>
           <section>
             {user?.shorturls?.map((short) => (
-              <Card key={short._id}>
-                <CardHeader>
-                  <h3>{`${window.location.protocol}/${window.location.host}/${short.shortCode}`}</h3>
-                  <h4>{short.originalUrl}</h4>
-                </CardHeader>
-                <CardBody>
-                  <Tooltip content="Visit URL" color="primary">
-                    <Button isIconOnly onPress={onVisit}>
-                      <ArrowBendUpRight />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip content="Share url with others">
-                    <Button isIconOnly onPress={handleSharing}>
-                      <ShareNetwork />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip content="Copy to Clipboard">
-                    <Button isIconOnly onPress={copyToclipboard}>
-                      {isCopied ? <CheckCircle /> : <Copy />}
-                    </Button>
-                  </Tooltip>
-                  <Tooltip content="Delete url" color="danger">
-                    <Button
-                      onPress={() => deleteShortUrl(short.shortCode)}
-                      isIconOnly
-                      variant="bordered"
-                      color="danger"
-                    >
-                      <Trash />
-                    </Button>
-                  </Tooltip>
-                </CardBody>
-                <Divider />
-                <CardFooter>
-                  <p>{new Date(short.createdAt).toLocaleDateString()}</p>
-                  <p>{`Visits: ${short.visits}`}</p>
-                </CardFooter>
-              </Card>
+              <URLCard
+                key={short._id}
+                short={short}
+                isCopied={isCopied}
+                copyToclipboard={copyToclipboard}
+                onVisit={onVisit}
+                handleSharing={handleSharing}
+                deleteUrlCard={deleteUrlCard}
+              />
             ))}
           </section>
         </div>
