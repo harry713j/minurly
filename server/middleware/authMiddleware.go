@@ -17,7 +17,7 @@ func VerifyLogin(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		userId, ok := session.Values["userid"].(string)
+		userId, ok := session.Values["userId"].(string)
 
 		if !ok || userId == "" {
 			utils.RespondWithError(w, http.StatusUnauthorized, "Unauthorized")

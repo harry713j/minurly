@@ -27,25 +27,22 @@ func InsertOneUser(user models.User) (any, error) {
 
 func FindUserById(userId string) (*models.UserResponse, error) {
 	var user models.UserResponse
+
+	userObjId, err := bson.ObjectIDFromHex(userId)
+
+	if err != nil {
+		log.Println("Failed to convert to object id")
+		return nil, err
+	}
+
 	// fetch all the short urls docs, using aggregation pipeline
 	pipeline := mongo.Pipeline{
-		// Match specific user
-		{{Key: "$match", Value: bson.D{{Key: "_id", Value: userId}}}},
-		// Lookup with sub-pipeline
+		{{Key: "$match", Value: bson.D{{Key: "_id", Value: userObjId}}}},
 		{{Key: "$lookup", Value: bson.D{
 			{Key: "from", Value: "shorturls"},
-			{Key: "let", Value: bson.D{{Key: "url_ids", Value: "$shorturls"}}}, // pass array to sub-pipeline
-			{Key: "pipeline", Value: bson.A{
-				bson.D{{Key: "$match", Value: bson.D{
-					{Key: "$expr", Value: bson.D{
-						{Key: "$in", Value: bson.A{"$_id", "$$url_ids"}},
-					}},
-				}}},
-				bson.D{{Key: "$sort", Value: bson.D{
-					{Key: "createdAt", Value: -1}, // sort newest first
-				}}},
-			}},
-			{Key: "as", Value: "shorturls"},
+			{Key: "localField", Value: "_id"},
+			{Key: "foreignField", Value: "userId"},
+			{Key: "as", Value: "shortUrls"},
 		}}},
 	}
 
@@ -75,25 +72,8 @@ func FindUserByEmail(email string) (*models.User, bool) {
 	err := userCollection.FindOne(context.TODO(), filter).Decode(&user)
 
 	if err != nil {
-		log.Println("Failed to get user by email")
 		return nil, false
 	}
 
 	return &user, true
-}
-
-func AddShortURLToUser(userId string, shortURLId bson.ObjectID) error {
-	filter := bson.D{{Key: "_id", Value: userId}}
-	update := bson.D{{Key: "$push", Value: bson.D{{Key: "shorturls", Value: shortURLId}}}}
-
-	_, err := userCollection.UpdateOne(context.TODO(), filter, update)
-	return err
-}
-
-func RemoveShortURLFromUser(userId string, shortURLId bson.ObjectID) error {
-	filter := bson.D{{Key: "_id", Value: userId}}
-	update := bson.D{{Key: "$pull", Value: bson.D{{Key: "shorturls", Value: shortURLId}}}}
-
-	_, err := userCollection.UpdateOne(context.TODO(), filter, update)
-	return err
 }

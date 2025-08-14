@@ -11,6 +11,7 @@ import (
 	"github.com/harry713j/minurly/helper"
 	"github.com/harry713j/minurly/models"
 	"github.com/harry713j/minurly/utils"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/idtoken"
@@ -25,12 +26,13 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// url will be created by oauth client
+	// look for this state
 	url := config.OAuthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline)
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
 func HandleLoginCallback(w http.ResponseWriter, r *http.Request) {
-
+	godotenv.Load()
 	code := r.URL.Query().Get("code") // oauth client send a ?code=random in query
 	if code == "" {
 		http.Error(w, "Code not found", http.StatusBadRequest)
@@ -64,14 +66,13 @@ func HandleLoginCallback(w http.ResponseWriter, r *http.Request) {
 
 	if user == nil {
 		// user not exists
-		user := &models.User{
+		user = &models.User{
 			Email:     email,
 			Name:      payload.Claims["name"].(string),
 			Profile:   payload.Claims["picture"].(string),
 			OAuthId:   payload.Subject,
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
-			ShortUrls: []bson.ObjectID{},
 		}
 
 		id, err := helper.InsertOneUser(*user)
@@ -104,7 +105,7 @@ func HandleLoginCallback(w http.ResponseWriter, r *http.Request) {
 	session, _ := config.SessionStore.Get(r, "sessionId")
 
 	session.Values["sessionId"] = sessionId
-	session.Values["userId"] = user.ID
+	session.Values["userId"] = user.ID.Hex()
 	session.Values["email"] = email
 
 	if err := session.Save(r, w); err != nil {
@@ -112,13 +113,7 @@ func HandleLoginCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type loginResponse struct {
-		Message string `json:"message"`
-	}
-
-	utils.RespondWithJSON(w, http.StatusCreated, loginResponse{
-		Message: "Login successful",
-	})
+	http.Redirect(w, r, os.Getenv("ALLOWED_ORIGIN")+"/dashboard", http.StatusSeeOther)
 }
 
 func HandleLogout(w http.ResponseWriter, r *http.Request) {
