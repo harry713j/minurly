@@ -15,6 +15,7 @@ import {
   User,
   CardFooter,
   Tooltip,
+  Divider,
 } from "@heroui/react";
 import axios, { type AxiosError } from "axios";
 import { SERVER_URL } from "@/utils/constants";
@@ -64,7 +65,7 @@ export default function Dashboard() {
 
       if (response.status === 201) {
         setShortUrl(
-          `${window.location.protocol}/${window.location.host}/${response.data.shortCode}`
+          `${window.location.protocol}//${window.location.host}/${response.data.shortCode}`
         );
 
         await refetchUser();
@@ -166,33 +167,47 @@ export default function Dashboard() {
     }
   };
 
-  const onVisit = () => {
-    window.open(`${shortUrl}`, "_blank", "noopener,noreferrer");
+  const onVisit = (url: string) => {
+    window.open(
+      `${window.location.protocol}//${window.location.host}/${url}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
   };
 
   return (
-    <div>
+    <>
       {isFetching ? (
-        <CircleNotch size={48} className="animate-spin text-orange-300" />
+        <div className="w-full h-screen flex justify-center items-center">
+          <CircleNotch size={48} className="animate-spin text-orange-300" />
+        </div>
       ) : (
-        <div>
-          <Navbar>
-            <NavbarBrand>
-              <h2>MinURLy</h2>
+        <div className="bg-gradient-to-tr from-orange-400 to-red-300 w-full h-screen flex flex-col items-center relative">
+          <Navbar maxWidth="xl" className="flex items-center">
+            <NavbarBrand className="flex-1">
+              <h2 className="text-2xl font-semibold text-green-500">MinURLy</h2>
             </NavbarBrand>
-            <NavbarContent>
+            <NavbarContent justify="end">
               <NavbarItem>
-                <Button variant="light" onPress={() => setIsOpen(!isOpen)}>
+                <Button
+                  variant="light"
+                  className="text-lg font-medium text-slate-600"
+                  onPress={() => setIsOpen(!isOpen)}
+                >
                   My Urls
                 </Button>
               </NavbarItem>
               <NavbarItem>
-                <Button disabled={isLoading} onPress={onLogout} className="">
-                  {isLoading ? (
-                    <CircleNotch className="w-5 h-5 animate-spin" />
-                  ) : (
-                    "Log out"
-                  )}
+                <Button
+                  disabled={isLoading}
+                  isLoading={isLoading}
+                  spinner={<CircleNotch />}
+                  color="danger"
+                  radius="sm"
+                  onPress={onLogout}
+                  className="text-lg font-medium"
+                >
+                  {isLoading ? "" : "Log out"}
                 </Button>
               </NavbarItem>
               <NavbarItem>
@@ -200,70 +215,113 @@ export default function Dashboard() {
               </NavbarItem>
             </NavbarContent>
           </Navbar>
-          <Card>
-            <CardHeader>
-              <h2>Short a Long link</h2>
-            </CardHeader>
-            <CardBody>
-              <Form validationErrors={formError} onSubmit={onSubmit}>
-                <Input
-                  isRequired
-                  className=""
-                  label="Long URL"
-                  labelPlacement="outside"
-                  placeholder="https://example.co.in/very-long-url"
-                  type="text"
-                  value={longUrl}
-                  onChange={(e) => setLongUrl(e.target.value)}
-                />
-                <Button type="submit">Shorten URL</Button>
-              </Form>
-            </CardBody>
-            <CardFooter>
-              {shortUrl && (
-                <div>
+          <div className="w-full h-full flex justify-center items-center">
+            <Card className="w-1/2 px-10 py-6">
+              <CardHeader>
+                <h2 className="text-3xl font-semibold text-slate-700">
+                  Short a Long Link
+                </h2>
+              </CardHeader>
+              <CardBody>
+                <Form
+                  validationErrors={formError}
+                  onSubmit={onSubmit}
+                  className="flex flex-col items-start space-y-1"
+                >
+                  <label
+                    htmlFor="longurl"
+                    className="text-lg font-medium text-slate-600"
+                  >
+                    Long URL<i className="text-red-500">*</i>
+                  </label>
                   <Input
-                    ref={shortUrlRef}
-                    readOnly
+                    isRequired
+                    size="lg"
+                    id="longurl"
+                    variant="bordered"
+                    radius="sm"
+                    className="caret-orange-500 text-base font-medium text-slate-600"
+                    labelPlacement="outside"
+                    placeholder="https://example.co.in/very-long-url"
                     type="text"
-                    className=""
-                    value={shortUrl}
-                    endContent={
-                      <Tooltip content="Copy to Clipboard" color="success">
-                        <Button
-                          isIconOnly
-                          onPress={copyToclipboard}
-                          variant="light"
-                        >
-                          {isCopied ? <CheckCircle /> : <Clipboard />}
-                        </Button>
-                      </Tooltip>
-                    }
+                    value={longUrl}
+                    onChange={(e) => setLongUrl(e.target.value)}
                   />
-                </div>
-              )}
-            </CardFooter>
-          </Card>
+                  <Button
+                    type="submit"
+                    isLoading={isLoading}
+                    color="success"
+                    radius="sm"
+                    className="mt-4 text-white font-semibold text-lg"
+                  >
+                    Shorten URL
+                  </Button>
+                </Form>
+              </CardBody>
+              <CardFooter className="w-full">
+                {shortUrl && (
+                  <div className="w-full">
+                    <Input
+                      ref={shortUrlRef}
+                      readOnly
+                      size="lg"
+                      type="text"
+                      radius="sm"
+                      className="w-full"
+                      value={shortUrl}
+                      endContent={
+                        <Tooltip content="Copy to Clipboard" color="success">
+                          <Button
+                            isIconOnly
+                            onPress={copyToclipboard}
+                            variant="light"
+                          >
+                            {isCopied ? (
+                              <CheckCircle
+                                size={24}
+                                className="text-green-500"
+                              />
+                            ) : (
+                              <Clipboard size={24} />
+                            )}
+                          </Button>
+                        </Tooltip>
+                      }
+                    />
+                  </div>
+                )}
+              </CardFooter>
+            </Card>
+          </div>
+          <footer className="w-full flex px-10 justify-start items-center bg-gray-300">
+            <p className="text-sm text-slate-600">
+              Copyright@MinURLy {new Date().getFullYear()}
+            </p>
+          </footer>
         </div>
       )}
-      {isOpen && (
-        <div>
-          <h2>Short Urls</h2>
-          <section>
-            {user?.shorturls?.map((short) => (
-              <URLCard
-                key={short._id}
-                short={short}
-                isCopied={isCopied}
-                copyToclipboard={copyToclipboard}
-                onVisit={onVisit}
-                handleSharing={handleSharing}
-                deleteUrlCard={deleteUrlCard}
-              />
-            ))}
-          </section>
-        </div>
-      )}
-    </div>
+
+      <div
+        className={`fixed bg-white z-50 h-screen shadow-xl top-0 right-0 px-4 py-6 transition-transform delay-300 ${
+          isOpen ? "translate-x-0" : "translate-x-[400px]"
+        }`}
+      >
+        <h2 className="text-3xl font-semibold text-slate-700">Short Urls</h2>
+        <Divider />
+        <section className="flex flex-col items-start space-y-4 mt-10">
+          {user?.shorturls?.map((short) => (
+            <URLCard
+              key={short._id}
+              short={short}
+              isCopied={isCopied}
+              copyToclipboard={copyToclipboard}
+              onVisit={onVisit}
+              handleSharing={handleSharing}
+              deleteUrlCard={deleteUrlCard}
+            />
+          ))}
+        </section>
+      </div>
+    </>
   );
 }

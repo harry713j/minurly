@@ -8,7 +8,7 @@ export default function Login() {
   };
 
   return (
-    <div className="w-full h-screen flex justify-center items-center">
+    <div className="w-full h-screen flex justify-center items-center bg-gradient-to-tr from-orange-400 to-red-300">
       <Card
         shadow="md"
         className="min-w-[400px] max-h-[320px] flex flex-col items-center px-12 py-8 space-y-8 "
