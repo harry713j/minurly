@@ -1,4 +1,4 @@
-package controller
+package handler
 
 import (
 	"encoding/json"
@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/harry713j/minurly/config"
-	"github.com/harry713j/minurly/helper"
-	"github.com/harry713j/minurly/models"
-	"github.com/harry713j/minurly/utils"
+	"github.com/harry713j/minurly/internal/config"
+	"github.com/harry713j/minurly/internal/helper"
+	"github.com/harry713j/minurly/internal/models"
+	"github.com/harry713j/minurly/internal/utils"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 

@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/harry713j/minurly/db"
-	"github.com/harry713j/minurly/models"
+	"github.com/harry713j/minurly/internal/db"
+	"github.com/harry713j/minurly/internal/models"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )

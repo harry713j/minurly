@@ -8,8 +8,8 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/harry713j/minurly/db"
-	"github.com/harry713j/minurly/routes"
+	"github.com/harry713j/minurly/internal/db"
+	"github.com/harry713j/minurly/internal/routes"
 	"github.com/joho/godotenv"
 )
 
@@ -40,5 +40,5 @@ func main() {
 
 	log.Printf("🚀 Server has started on Port %v\n", port)
 	log.Fatal(server.ListenAndServe())
-	defer db.Client.Disconnect(context.TODO())
+	db.Client.Disconnect(context.TODO())
 }

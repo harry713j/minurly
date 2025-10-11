@@ -3,9 +3,9 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/harry713j/minurly/config"
-	"github.com/harry713j/minurly/helper"
-	"github.com/harry713j/minurly/utils"
+	"github.com/harry713j/minurly/internal/config"
+	"github.com/harry713j/minurly/internal/helper"
+	"github.com/harry713j/minurly/internal/utils"
 )
 
 func VerifyLogin(next http.HandlerFunc) http.HandlerFunc {

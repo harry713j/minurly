@@ -1,4 +1,4 @@
-package controller
+package handler
 
 import (
 	"context"
@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/harry713j/minurly/config"
-	"github.com/harry713j/minurly/helper"
-	"github.com/harry713j/minurly/models"
-	"github.com/harry713j/minurly/utils"
+	"github.com/harry713j/minurly/internal/config"
+	"github.com/harry713j/minurly/internal/helper"
+	"github.com/harry713j/minurly/internal/models"
+	"github.com/harry713j/minurly/internal/utils"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"golang.org/x/oauth2"

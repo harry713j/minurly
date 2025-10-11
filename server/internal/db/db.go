@@ -4,10 +4,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/harry713j/minurly/utils"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 
+	"github.com/harry713j/minurly/internal/utils"
 	"github.com/joho/godotenv"
 )
 
