@@ -16,6 +16,7 @@ type Config struct {
 	Server   *ServerConfig
 	Database *DatabaseConfig
 	Auth     *AuthConfig
+	Log      *LogConfig
 }
 
 type PrimaryConfig struct {
@@ -36,7 +37,12 @@ type AuthConfig struct {
 }
 
 type DatabaseConfig struct {
-	DbURL string
+	DbURL  string
+	DbName string
+}
+
+type LogConfig struct {
+	Level string
 }
 
 func LoadConfig() *Config {
@@ -76,14 +82,18 @@ func LoadConfig() *Config {
 	}
 
 	db := &DatabaseConfig{
-		DbURL: os.Getenv("DATABASE_URL"),
+		DbURL:  os.Getenv("DATABASE_URL"),
+		DbName: os.Getenv("DATABASE_NAME"),
 	}
+
+	log := &LogConfig{Level: "debug"}
 
 	mainConfig := &Config{
 		Primary:  primary,
 		Server:   server,
 		Auth:     auth,
 		Database: db,
+		Log:      log,
 	}
 
 	return mainConfig
