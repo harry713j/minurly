@@ -1,8 +1,6 @@
 package database
 
 import (
-	"log"
-
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 
@@ -13,7 +11,7 @@ import (
 func New(cfg *config.Config, logger *logging.LoggerService) (*mongo.Client, *mongo.Database) {
 	client, err := mongo.Connect(options.Client().ApplyURI(cfg.Database.DbURL))
 	if err != nil {
-		log.Fatal(err)
+		logger.Logger.Fatal().Err(err).Msg("MongoDB connection failed: ")
 	}
 
 	db := client.Database(cfg.Database.DbName)

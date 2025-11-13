@@ -32,8 +32,9 @@ type ServerConfig struct {
 }
 
 type AuthConfig struct {
-	OAuthConfig  *oauth2.Config
-	SessionStore *sessions.CookieStore
+	OAuthConfig    *oauth2.Config
+	SessionStore   *sessions.CookieStore
+	GoogleClientId string
 }
 
 type DatabaseConfig struct {
@@ -69,8 +70,9 @@ func LoadConfig() *Config {
 	sessionStore := sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 
 	auth := &AuthConfig{
-		OAuthConfig:  oAuthConfig,
-		SessionStore: sessionStore,
+		OAuthConfig:    oAuthConfig,
+		SessionStore:   sessionStore,
+		GoogleClientId: os.Getenv("GOOGLE_CLIENT_ID"),
 	}
 
 	auth.SessionStore.Options = &sessions.Options{

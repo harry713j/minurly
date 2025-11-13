@@ -15,3 +15,8 @@ type ShortUrl struct {
 	LastVisited time.Time     `json:"lastVisited" bson:"lastVisited"`
 	CreatedAt   time.Time     `json:"createdAt" bson:"createdAt"`
 }
+
+// DTO
+type CreateUrlPayload struct {
+	OriginalUrl string `json:"originalUrl" validate:"required,url"`
+}
