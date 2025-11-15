@@ -30,7 +30,7 @@ func (u *UrlService) Create(userId string, originalUrl string) (*models.ShortUrl
 	userObjId, err := bson.ObjectIDFromHex(userId)
 	if err != nil {
 		u.log.Warn().Str("err", err.Error()).Msg("invalid user id " + userId)
-		return nil, apperrors.NewBadRequestErr("invalid user details")
+		return nil, apperrors.NewUnauthorizedErr("Unauthorized")
 	}
 
 	ctx := context.Background()
@@ -86,8 +86,8 @@ func (u *UrlService) Fetch(shortCode string) (*models.ShortUrl, error) {
 func (u *UrlService) Remove(userId string, shortCode string) error {
 	userObjId, err := bson.ObjectIDFromHex(userId)
 	if err != nil {
-		u.log.Warn().Str("err", err.Error()).Msg("invalid user id " + userId)
-		return apperrors.NewBadRequestErr("invalid user details")
+		u.log.Warn().Str("err", err.Error()).Str("userId", userId).Msg("invalid user id ")
+		return apperrors.NewUnauthorizedErr("Unauthorized")
 	}
 
 	ctx := context.Background()

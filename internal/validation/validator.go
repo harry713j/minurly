@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/harry713j/minurly/internal/errors"
+	"github.com/harry713j/minurly/internal/apperrors"
 )
 
 var validate *validator.Validate
@@ -16,7 +16,7 @@ func InitValidator() {
 func ValidateStruct(s interface{}) error {
 	if err := validate.Struct(s); err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
-			return errors.NewBadRequestErr("invalid input structure")
+			return apperrors.NewBadRequestErr("invalid input structure")
 		}
 
 		// Collect all field errors
@@ -25,7 +25,7 @@ func ValidateStruct(s interface{}) error {
 			fieldErrors = append(fieldErrors, fmt.Sprintf("%s is %s", err.Field(), err.Tag()))
 		}
 
-		return errors.NewBadRequestErr(fmt.Sprintf("validation failed: %v", fieldErrors))
+		return apperrors.NewBadRequestErr(fmt.Sprintf("validation failed: %v", fieldErrors))
 	}
 	return nil
 }

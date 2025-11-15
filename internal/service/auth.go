@@ -51,26 +51,34 @@ func (a *AuthService) CreateSession(userId bson.ObjectID) (*models.Session, erro
 		return nil, apperrors.NewInternalServerErr()
 	}
 
+	a.log.Info().Msg("successfully created the session")
 	return session, nil
 }
 
-func (a *AuthService) DeleteSession(userId bson.ObjectID) error {
+func (a *AuthService) DeleteSession(userId string) error {
+	userObjId, err := bson.ObjectIDFromHex(userId)
+	if err != nil {
+		a.log.Warn().Str("userId", userId).Msg("not a valid bson object id")
+		return apperrors.NewUnauthorizedErr("Unauthorized")
+	}
+
 	ctx := context.Background()
 
-	_, err := a.repo.User.FindById(ctx, userId)
+	_, err = a.repo.User.FindById(ctx, userObjId)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			a.log.Warn().Str("userId", userId.Hex()).Msg("user not found")
+			a.log.Warn().Str("userId", userId).Msg("user not found")
 			return apperrors.NewNotFoundErr("user not found")
 		}
 		a.log.Err(err).Msg("database error while finding user")
 		return apperrors.NewInternalServerErr()
 	}
 
-	if err := a.repo.Auth.DeleteOne(ctx, userId); err != nil {
-		a.log.Err(err).Msg("failed to delete session from database of user with userId " + userId.String())
+	if err := a.repo.Auth.DeleteOne(ctx, userObjId); err != nil {
+		a.log.Err(err).Msg("failed to delete session from database of user with userId " + userId)
 		return apperrors.NewInternalServerErr()
 	}
 
+	a.log.Info().Str("userId", userId).Msg("successfully deleted the session")
 	return nil
 }

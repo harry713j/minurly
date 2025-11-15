@@ -76,15 +76,14 @@ func (u *UserService) Create(authCode string) (*models.User, error) {
 }
 
 func (u *UserService) Fetch(userId string) (*models.UserResponse, error) {
-	userObjectId, err := bson.ObjectIDFromHex(userId)
+	userObjId, err := bson.ObjectIDFromHex(userId)
 	if err != nil {
 		u.log.Warn().Str("err", err.Error()).Msg("invalid user id " + userId)
-		return nil, apperrors.NewBadRequestErr("invalid user details")
+		return nil, apperrors.NewUnauthorizedErr("Unauthorized")
 	}
-
 	ctx := context.Background()
 
-	resp, err := u.repo.User.FindById(ctx, userObjectId)
+	resp, err := u.repo.User.FindById(ctx, userObjId)
 	if err != nil {
 		u.log.Err(err).Msg("failed to get user url data of user with userId " + userId)
 		return nil, apperrors.NewInternalServerErr()

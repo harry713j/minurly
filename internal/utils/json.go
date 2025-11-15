@@ -2,37 +2,46 @@ package utils
 
 import (
 	"encoding/json"
-	"log"
+	"fmt"
 	"net/http"
+
+	"github.com/harry713j/minurly/internal/apperrors"
+	"github.com/rs/zerolog"
 )
 
-func RespondWithJSON[T any](w http.ResponseWriter, code int, payload T) {
+func RespondJSON[T any](w http.ResponseWriter, code int, payload T, logger zerolog.Logger) {
 	w.Header().Add("Content-Type", "application/json")
 
 	data, err := json.Marshal(payload)
-
 	if err != nil {
-		log.Printf("Error marshaling the json for payload %v %v\n", payload, err)
-		w.WriteHeader(500)
-		w.Write([]byte("Server error"))
+		logger.Err(err).Msg(fmt.Sprintf("failed to marshalling the json payload %v", payload))
+
+		apiErr := apperrors.NewInternalServerErr()
+
+		RespondError(w, apiErr)
 		return
 	}
 
 	w.WriteHeader(code)
-	w.Write(data)
+	if _, err := w.Write(data); err != nil {
+		logger.Err(err).Msg(fmt.Sprintf("failed to write the response %v", payload))
+		apiErr := apperrors.NewInternalServerErr()
+
+		RespondError(w, apiErr)
+		return
+	}
+
+	logger.Info().Msg("successfully written the response!")
 }
 
-func RespondWithError(w http.ResponseWriter, code int, msg string) {
-	if code > 499 {
-		log.Printf("Responding with 500 error: %s\n", msg)
-		w.WriteHeader(500)
+func RespondError(w http.ResponseWriter, err error) {
+	apiErr, ok := err.(*apperrors.ApiError)
+
+	if !ok {
+		apiErr = apperrors.NewInternalServerErr()
 	}
 
-	type errorResponse struct {
-		Error string `json:"error"`
-	}
-
-	RespondWithJSON(w, code, errorResponse{
-		Error: msg,
-	})
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(apiErr.Status)
+	json.NewEncoder(w).Encode(apiErr)
 }
