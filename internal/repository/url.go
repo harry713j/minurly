@@ -64,7 +64,10 @@ func (u *UrlRepo) DeleteOne(ctx context.Context, shortCode string, userId bson.O
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	filter := bson.D{{Key: "shortCode", Value: shortCode}}
+	filter := bson.D{
+		{Key: "shortCode", Value: shortCode},
+		{Key: "userId", Value: userId},
+	}
 
 	if _, err := u.collection.DeleteOne(ctx, filter); err != nil {
 		u.log.Err(err).Msg(fmt.Sprintf("failed to remove url entry from database with short code %s and userId %s", shortCode, userId.String()))

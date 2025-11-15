@@ -22,7 +22,7 @@ func NewUserRepo(db *mongo.Database, logger zerolog.Logger) *UserRepo {
 	}
 }
 
-func (u *UserRepo) InsertOne(ctx context.Context, user *models.User) error {
+func (u *UserRepo) InsertOne(ctx context.Context, user *models.User) (*bson.ObjectID, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
@@ -31,13 +31,13 @@ func (u *UserRepo) InsertOne(ctx context.Context, user *models.User) error {
 	res, err := u.collection.InsertOne(ctx, user)
 	if err != nil {
 		u.log.Err(err).Msg("failed to create an user entry with email " + user.Email)
-		return err
+		return nil, err
 	}
 
 	insertedIdStr := res.InsertedID.(bson.ObjectID)
 
 	u.log.Info().Msg("user entry in database created successfully with email " + user.Email + " and user id " + insertedIdStr.String())
-	return nil
+	return &insertedIdStr, nil
 }
 
 func (u *UserRepo) FindById(ctx context.Context, userId bson.ObjectID) (*models.UserResponse, error) {

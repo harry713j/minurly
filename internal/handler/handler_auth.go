@@ -26,6 +26,8 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO: Store state in session, to verify in callback function, to prevent csrf attack
+
 	// url will be created by oauth client
 	// look for this state
 	url := config.OAuthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline)
@@ -33,7 +35,8 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleLoginCallback(w http.ResponseWriter, r *http.Request) {
-	godotenv.Load()
+	// TODO: Verify the state
+
 	code := r.URL.Query().Get("code") // oauth client send a ?code=random in query
 	if code == "" {
 		http.Error(w, "Code not found", http.StatusBadRequest)
